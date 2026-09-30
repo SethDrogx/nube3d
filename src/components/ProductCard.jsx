@@ -58,7 +58,8 @@ export default function ProductCard({ product, onAdd }) {
             <strong>${product.price.toFixed(2)}</strong>
             <motion.button
               className="add-button"
-              onClick={() => onAdd(product.name)}
+              onClick={() => onAdd(product.id)}
+              aria-label={`Agregar al carrito: ${product.name}`}
               whileHover={{ x: 2 }}
               whileTap={{ scale: 0.94 }}
             >

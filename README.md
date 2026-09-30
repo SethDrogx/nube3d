@@ -1,3 +1,11 @@
+## Fase 2 — Carrito de compras
+
+Carrito global con React Context, persistencia en `localStorage`, contador del navbar, notificaciones con Motion y página `/carrito`. Los productos se toman exclusivamente de `src/data/products.js`; el almacenamiento guarda solo identificadores y cantidades. Envío: $0. Finalizar compra muestra un aviso informativo, sin pagos ni pedidos.
+
+Se pueden agregar productos desde Home y Catálogo, aumentar o disminuir cantidades (mínimo una unidad), eliminar productos y vaciar el carrito. El diseño aprobado del Home se conserva.
+
+Pruebas de lógica: `node --test tests/cartState.test.js` (7 pruebas). Compilación: `npm run build`. No se agregaron dependencias.
+
 ## Fase 1.5 — Animaciones
 
 La interfaz ahora incluye animaciones y microinteracciones con Motion for React. Consulta `PHASE_1_5_ANIMATIONS.md` para el detalle.
@@ -42,7 +50,7 @@ npm run preview
 - `/` — inicio
 - `/catalogo` — catálogo
 - `/producto/:id` — detalle de producto (placeholder)
-- `/carrito` — carrito (placeholder)
+- `/carrito` — carrito funcional con cantidades y persistencia
 - `/personalizado` — impresión personalizada (placeholder)
 - `/login` — inicio de sesión (placeholder)
 - `/admin` — panel administrativo (placeholder)
@@ -52,6 +60,7 @@ npm run preview
 ```text
 src/
   components/   Componentes visuales reutilizables
+  context/      Estado global del carrito y lógica de persistencia
   data/         Datos mock de productos y categorías
   pages/        Páginas asociadas a las rutas
   App.jsx       Configuración de React Router
@@ -61,7 +70,7 @@ src/
 
 ## Alcance de esta fase
 
-Esta fase solo migra y limpia la arquitectura. El carrito real, autenticación, roles `SUPER_USUARIO` / `INVITADO`, panel administrativo funcional, cotizaciones con persistencia, backend, base de datos y chatbot inteligente se implementarán en fases posteriores.
+La fase 2 incorpora únicamente el carrito de compras sobre la arquitectura y animaciones aprobadas. Autenticación, roles `SUPER_USUARIO` / `INVITADO`, panel administrativo funcional, cotizaciones con persistencia, backend, base de datos, pagos, pedidos y chatbot inteligente quedan para fases posteriores.
 
 ## Cambios técnicos
 

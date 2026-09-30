@@ -4,24 +4,20 @@ import ProductsSection from '../components/ProductsSection'
 import Footer from '../components/Footer'
 import ChatAssistant from '../components/ChatAssistant'
 import { products } from '../data/products'
+import { useCart } from '../context/CartContext'
 
 export default function Catalogo() {
   const [query, setQuery] = useState('')
-  const [cartCount, setCartCount] = useState(0)
+  const { addProduct } = useCart()
   const filteredProducts = useMemo(
     () => products.filter((product) => product.name.toLowerCase().includes(query.toLowerCase())),
     [query],
   )
 
-  const addToCart = (name) => {
-    setCartCount((count) => count + 1)
-    window.alert(`${name} se agregó al carrito`)
-  }
-
   return (
     <main>
-      <Navbar query={query} onQueryChange={setQuery} cartCount={cartCount} />
-      <ProductsSection products={filteredProducts} onAdd={addToCart} />
+      <Navbar query={query} onQueryChange={setQuery} />
+      <ProductsSection products={filteredProducts} onAdd={addProduct} />
       <Footer />
       <ChatAssistant />
     </main>

@@ -1,12 +1,14 @@
 import { motion } from 'motion/react'
 import { Link } from 'react-router-dom'
 import Brand from './Brand'
+import { useCart } from '../context/CartContext'
 
 function BagIcon() {
   return <span aria-hidden="true" className="bag-icon">⌂</span>
 }
 
-export default function Navbar({ query = '', onQueryChange = () => {}, cartCount = 0 }) {
+export default function Navbar({ query = '', onQueryChange = () => {} }) {
+  const { totalQuantity: cartCount } = useCart()
   return (
     <>
       <motion.div
@@ -44,11 +46,11 @@ export default function Navbar({ query = '', onQueryChange = () => {}, cartCount
           </label>
           <Link className="login" to="/login">Iniciar sesión</Link>
           <motion.div whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.9 }}>
-            <Link className="cart" to="/carrito" aria-label={`Carrito con ${cartCount} productos`}>
+            <Link className="cart" to="/carrito" aria-label={`Carrito con ${cartCount} ${cartCount === 1 ? 'producto' : 'productos'}`}>
               <BagIcon />
               <motion.b
                 key={cartCount}
-                initial={{ scale: 0.5, opacity: 0 }}
+                initial={{ scale: 0.85, opacity: 0.7 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ type: 'spring', stiffness: 500, damping: 20 }}
               >

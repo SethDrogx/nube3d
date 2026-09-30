@@ -7,6 +7,7 @@ import Carrito from './pages/Carrito'
 import Personalizado from './pages/Personalizado'
 import Login from './pages/Login'
 import Admin from './pages/Admin'
+import { CartProvider } from './context/CartContext'
 
 function AnimatedRoutes() {
   const location = useLocation()
@@ -40,7 +41,9 @@ export default function App() {
   return (
     <MotionConfig reducedMotion="user">
       <BrowserRouter>
-        <AnimatedRoutes />
+        <CartProvider>
+          <AnimatedRoutes />
+        </CartProvider>
       </BrowserRouter>
     </MotionConfig>
   )
