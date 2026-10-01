@@ -115,3 +115,9 @@ La fase 4 agrega administración local de productos y categorías sobre las fase
 - React Router prepara la navegación entre módulos.
 - Se eliminaron dependencias que no participaban en la interfaz visible: Next.js, TypeScript, shadcn, Base UI, Tailwind y utilidades asociadas.
 - La interfaz principal conserva el CSS visual del prototipo original, ahora como CSS plano sin dependencias del framework anterior.
+
+### Imágenes desde equipo o celular
+
+En la administración de productos se puede conservar una URL de imagen o seleccionar una foto desde el dispositivo. El navegador optimiza las fotos antes de almacenarlas localmente para evitar guardar directamente archivos de cámara demasiado pesados. En móvil, el selector puede ofrecer galería o cámara según el navegador/sistema operativo.
+
+Esta solución sigue siendo de desarrollo: los archivos quedan representados como imágenes embebidas en `localStorage`. Cuando exista backend, deben migrarse a almacenamiento real de archivos.

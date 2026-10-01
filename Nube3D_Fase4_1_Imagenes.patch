@@ -1,0 +1,209 @@
+diff --git a/PHASE_4_ADMIN.md b/PHASE_4_ADMIN.md
+index 576d004..bcbbe97 100644
+--- a/PHASE_4_ADMIN.md
++++ b/PHASE_4_ADMIN.md
+@@ -36,3 +36,16 @@ Todas requieren `SUPER_USUARIO` mediante `ProtectedRoute`:
+ ## Pruebas
+ 
+ `npm test` ejecuta las pruebas de autenticación, carrito y lógica del catálogo. La Fase 4 agrega pruebas de inicialización, CRUD, persistencia, métricas, categorías y restauración de datos demo.
++
++## Ajuste de imágenes de producto
++
++El formulario de productos permite ahora dos fuentes de imagen:
++
++- URL `http(s)`.
++- Archivo de imagen seleccionado desde el equipo o dispositivo móvil.
++
++En navegadores móviles, el selector de archivos puede permitir elegir una foto existente o tomar una nueva con la cámara. Antes de guardarse en el catálogo local, la imagen se redimensiona y comprime en el navegador para reducir el consumo de `localStorage`.
++
++La opción visual **Color de fondo** se retiró del formulario de alta/edición. Los productos existentes conservan internamente su color actual y los productos nuevos reciben el color neutro predeterminado del catálogo. Este campo ya no requiere intervención del administrador.
++
++> Nota: la imagen subida se guarda temporalmente como `data URL` dentro del almacenamiento local del navegador. Es adecuada para esta etapa de demostración, no para producción. En una fase posterior deberá reemplazarse por subida real a backend/almacenamiento de archivos.
+diff --git a/README.md b/README.md
+index 809a350..98747f1 100644
+--- a/README.md
++++ b/README.md
+@@ -115,3 +115,9 @@ La fase 4 agrega administración local de productos y categorías sobre las fase
+ - React Router prepara la navegación entre módulos.
+ - Se eliminaron dependencias que no participaban en la interfaz visible: Next.js, TypeScript, shadcn, Base UI, Tailwind y utilidades asociadas.
+ - La interfaz principal conserva el CSS visual del prototipo original, ahora como CSS plano sin dependencias del framework anterior.
++
++### Imágenes desde equipo o celular
++
++En la administración de productos se puede conservar una URL de imagen o seleccionar una foto desde el dispositivo. El navegador optimiza las fotos antes de almacenarlas localmente para evitar guardar directamente archivos de cámara demasiado pesados. En móvil, el selector puede ofrecer galería o cámara según el navegador/sistema operativo.
++
++Esta solución sigue siendo de desarrollo: los archivos quedan representados como imágenes embebidas en `localStorage`. Cuando exista backend, deben migrarse a almacenamiento real de archivos.
+diff --git a/src/components/admin/ProductForm.jsx b/src/components/admin/ProductForm.jsx
+index 56bf8e8..9e3b0a9 100644
+--- a/src/components/admin/ProductForm.jsx
++++ b/src/components/admin/ProductForm.jsx
+@@ -1,14 +1,9 @@
+-import { useEffect, useMemo, useState } from 'react'
++import { useEffect, useMemo, useRef, useState } from 'react'
+ import { motion } from 'motion/react'
++import { isValidImageSource, prepareImageFile } from '../../utils/imageUpload.js'
+ 
+ const emptyProduct = {
+-  name: '', category: '', price: '', stock: '', image: '', description: '', tag: '', color: '#eee9e1',
+-}
+-
+-function isValidImage(value) {
+-  if (!value) return true
+-  if (value.startsWith('/')) return true
+-  try { const url = new URL(value); return ['http:', 'https:'].includes(url.protocol) } catch { return false }
++  name: '', category: '', price: '', stock: '', image: '', description: '', tag: '',
+ }
+ 
+ function validate(values) {
+@@ -19,7 +14,7 @@ function validate(values) {
+   if (values.price === '' || !Number.isFinite(price) || price < 0) errors.price = 'Ingresa un precio válido mayor o igual a 0.'
+   const stock = Number(values.stock)
+   if (values.stock === '' || !Number.isInteger(stock) || stock < 0) errors.stock = 'El stock debe ser un entero mayor o igual a 0.'
+-  if (!isValidImage(values.image.trim())) errors.image = 'Usa una URL http(s) válida o una ruta local que empiece con /.'
++  if (!isValidImageSource(values.image.trim())) errors.image = 'Usa una URL http(s), una ruta local que empiece con / o sube una imagen.'
+   return errors
+ }
+ 
+@@ -27,19 +22,57 @@ export default function ProductForm({ initialProduct, categories, submitLabel, o
+   const initialValues = useMemo(() => initialProduct ? {
+     name: initialProduct.name ?? '', category: initialProduct.category ?? '', price: String(initialProduct.price ?? ''),
+     stock: String(initialProduct.stock ?? 0), image: initialProduct.image ?? '', description: initialProduct.description ?? '',
+-    tag: initialProduct.tag ?? '', color: initialProduct.color ?? '#eee9e1',
++    tag: initialProduct.tag ?? '',
+   } : emptyProduct, [initialProduct])
+   const [values, setValues] = useState(initialValues)
+   const [errors, setErrors] = useState({})
+   const [saving, setSaving] = useState(false)
++  const [processingImage, setProcessingImage] = useState(false)
++  const [uploadedFileName, setUploadedFileName] = useState('')
++  const fileInputRef = useRef(null)
+ 
+-  useEffect(() => { setValues(initialValues); setErrors({}) }, [initialValues])
++  useEffect(() => {
++    setValues(initialValues)
++    setErrors({})
++    setUploadedFileName(initialValues.image.startsWith('data:image/') ? 'Imagen guardada desde archivo' : '')
++  }, [initialValues])
++
++  const usingUploadedImage = values.image.startsWith('data:image/')
+ 
+   function setField(field, value) {
+     setValues((current) => ({ ...current, [field]: value }))
+     setErrors((current) => ({ ...current, [field]: undefined, form: undefined }))
+   }
+ 
++  function handleImageUrlChange(value) {
++    setUploadedFileName('')
++    setField('image', value)
++  }
++
++  async function handleImageFile(event) {
++    const file = event.target.files?.[0]
++    if (!file) return
++    setProcessingImage(true)
++    setErrors((current) => ({ ...current, image: undefined, form: undefined }))
++    try {
++      const prepared = await prepareImageFile(file)
++      setValues((current) => ({ ...current, image: prepared.dataUrl }))
++      setUploadedFileName(prepared.originalName)
++    } catch (error) {
++      setErrors((current) => ({ ...current, image: error?.message || 'No se pudo procesar la imagen.' }))
++      event.target.value = ''
++    } finally {
++      setProcessingImage(false)
++    }
++  }
++
++  function clearImage() {
++    setValues((current) => ({ ...current, image: '' }))
++    setUploadedFileName('')
++    setErrors((current) => ({ ...current, image: undefined }))
++    if (fileInputRef.current) fileInputRef.current.value = ''
++  }
++
+   async function handleSubmit(event) {
+     event.preventDefault()
+     const nextErrors = validate(values)
+@@ -48,7 +81,7 @@ export default function ProductForm({ initialProduct, categories, submitLabel, o
+     const result = onSubmit({
+       ...values,
+       name: values.name.trim(), category: values.category.trim(), price: Number(values.price), stock: Number(values.stock),
+-      image: values.image.trim(), description: values.description.trim(), tag: values.tag.trim(), color: values.color || '#eee9e1',
++      image: values.image.trim(), description: values.description.trim(), tag: values.tag.trim(),
+     })
+     if (!result?.ok) setErrors({ form: result?.message || 'No se pudo guardar el producto.' })
+     setSaving(false)
+@@ -61,14 +94,40 @@ export default function ProductForm({ initialProduct, categories, submitLabel, o
+         <label>Categoría<select value={values.category} onChange={(e) => setField('category', e.target.value)}><option value="">Selecciona una categoría</option>{categories.map((category) => <option key={category.name} value={category.name}>{category.name}</option>)}</select>{errors.category && <span className="admin-field-error">{errors.category}</span>}</label>
+         <label>Precio<input type="number" min="0" step="0.01" value={values.price} onChange={(e) => setField('price', e.target.value)} />{errors.price && <span className="admin-field-error">{errors.price}</span>}</label>
+         <label>Stock<input type="number" min="0" step="1" value={values.stock} onChange={(e) => setField('stock', e.target.value)} />{errors.stock && <span className="admin-field-error">{errors.stock}</span>}</label>
+-        <label>Etiqueta<input value={values.tag} onChange={(e) => setField('tag', e.target.value)} placeholder="Nuevo, Popular..." /></label>
+-        <label>Color de fondo<input type="color" value={values.color} onChange={(e) => setField('color', e.target.value)} /></label>
+-        <label className="admin-form-wide">URL de imagen<input value={values.image} onChange={(e) => setField('image', e.target.value)} placeholder="https://..." />{errors.image && <span className="admin-field-error">{errors.image}</span>}</label>
++        <label className="admin-form-wide">Etiqueta<input value={values.tag} onChange={(e) => setField('tag', e.target.value)} placeholder="Nuevo, Popular..." /></label>
++
++        <div className="admin-form-wide admin-image-source">
++          <div className="admin-image-source-copy">
++            <strong>Imagen del producto</strong>
++            <span>Pega una URL o sube una foto desde tu equipo. En celular puedes elegir una imagen de tu galería o tomar una foto con la cámara.</span>
++          </div>
++
++          <label>URL de imagen
++            <input
++              value={usingUploadedImage ? '' : values.image}
++              onChange={(e) => handleImageUrlChange(e.target.value)}
++              placeholder={usingUploadedImage ? 'Actualmente se usa una imagen subida desde archivo' : 'https://...'}
++              disabled={usingUploadedImage}
++            />
++          </label>
++
++          <div className="admin-upload-row">
++            <input ref={fileInputRef} className="admin-file-input" type="file" accept="image/*" onChange={handleImageFile} />
++            <button className="admin-secondary-button" type="button" onClick={() => fileInputRef.current?.click()} disabled={processingImage}>
++              {processingImage ? 'Preparando imagen…' : usingUploadedImage ? 'Cambiar imagen' : 'Subir imagen'}
++            </button>
++            {(values.image || uploadedFileName) && <button className="admin-image-clear" type="button" onClick={clearImage}>Quitar imagen</button>}
++            {uploadedFileName && <span className="admin-upload-name">{uploadedFileName}</span>}
++          </div>
++          <p className="admin-image-note">Las fotos subidas se optimizan automáticamente para esta versión local. Más adelante el almacenamiento se moverá al backend/servicio de imágenes.</p>
++          {errors.image && <span className="admin-field-error">{errors.image}</span>}
++        </div>
++
+         <label className="admin-form-wide">Descripción<textarea rows="4" value={values.description} onChange={(e) => setField('description', e.target.value)} /></label>
+       </div>
+-      {values.image && isValidImage(values.image.trim()) && <div className="admin-image-preview"><span>Vista previa</span><img src={values.image} alt="Vista previa del producto" onError={(event) => { event.currentTarget.style.opacity = '.2' }} /></div>}
++      {values.image && isValidImageSource(values.image.trim()) && <div className="admin-image-preview"><span>Vista previa</span><img src={values.image} alt="Vista previa del producto" onError={(event) => { event.currentTarget.style.opacity = '.2' }} /></div>}
+       {errors.form && <p className="admin-form-error" role="alert">{errors.form}</p>}
+-      <motion.button className="primary-button admin-save-button" type="submit" disabled={saving} whileTap={{ scale: 0.98 }}>{saving ? 'Guardando…' : submitLabel}<span>↗</span></motion.button>
++      <motion.button className="primary-button admin-save-button" type="submit" disabled={saving || processingImage} whileTap={{ scale: 0.98 }}>{saving ? 'Guardando…' : submitLabel}<span>↗</span></motion.button>
+     </motion.form>
+   )
+ }
+diff --git a/src/main.css b/src/main.css
+index 19a95ea..fcc9692 100644
+--- a/src/main.css
++++ b/src/main.css
+@@ -188,13 +188,22 @@ body { overflow-x:hidden; }
+ .admin-product-form label,.admin-category-create label { color:var(--ink); display:flex; flex-direction:column; font-size:11px; font-weight:700; gap:9px; }
+ .admin-product-form input,.admin-product-form select,.admin-product-form textarea,.admin-category-create input,.admin-category-name input { background:var(--cream); border:1px solid var(--line); border-radius:3px; color:var(--ink); min-height:45px; padding:11px 12px; width:100%; }
+ .admin-product-form textarea { min-height:105px; resize:vertical; }
+-.admin-product-form input[type="color"] { padding:5px; }
+ .admin-form-wide { grid-column:1/-1; }
+ .admin-field-error,.admin-form-error { color:#a75445; font-size:10px; font-weight:500; line-height:1.5; }
+ .admin-form-error { border-left:2px solid var(--coral); margin:18px 0; padding-left:10px; }
+ .admin-image-preview { align-items:flex-start; display:flex; flex-direction:column; gap:9px; margin:24px 0; }
+ .admin-image-preview span { color:var(--muted); font-size:10px; }
+ .admin-image-preview img { background:var(--cream); border:1px solid var(--line); height:170px; object-fit:cover; width:170px; }
++.admin-image-source { background:var(--cream); border:1px solid var(--line); border-radius:3px; padding:18px; }
++.admin-image-source-copy { display:flex; flex-direction:column; gap:5px; margin-bottom:16px; }
++.admin-image-source-copy strong { font-size:11px; }
++.admin-image-source-copy span,.admin-image-note,.admin-upload-name { color:var(--muted); font-size:10px; font-weight:400; line-height:1.55; }
++.admin-file-input { display:none; }
++.admin-upload-row { align-items:center; display:flex; flex-wrap:wrap; gap:10px; margin-top:12px; }
++.admin-upload-row .admin-secondary-button { min-height:40px; padding:11px 15px; }
++.admin-image-clear { background:none; border:0; color:#9b5a50; font-size:11px; padding:8px 2px; text-decoration:underline; text-underline-offset:3px; }
++.admin-upload-name { max-width:330px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
++.admin-image-note { margin:10px 0 0; max-width:650px; }
+ .admin-save-button { border:0; margin-top:24px; }
+ 
+ .admin-category-create { background:var(--cream); border:1px solid var(--line); margin-bottom:24px; padding:22px; }

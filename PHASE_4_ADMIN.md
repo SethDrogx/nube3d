@@ -36,3 +36,16 @@ Todas requieren `SUPER_USUARIO` mediante `ProtectedRoute`:
 ## Pruebas
 
 `npm test` ejecuta las pruebas de autenticación, carrito y lógica del catálogo. La Fase 4 agrega pruebas de inicialización, CRUD, persistencia, métricas, categorías y restauración de datos demo.
+
+## Ajuste de imágenes de producto
+
+El formulario de productos permite ahora dos fuentes de imagen:
+
+- URL `http(s)`.
+- Archivo de imagen seleccionado desde el equipo o dispositivo móvil.
+
+En navegadores móviles, el selector de archivos puede permitir elegir una foto existente o tomar una nueva con la cámara. Antes de guardarse en el catálogo local, la imagen se redimensiona y comprime en el navegador para reducir el consumo de `localStorage`.
+
+La opción visual **Color de fondo** se retiró del formulario de alta/edición. Los productos existentes conservan internamente su color actual y los productos nuevos reciben el color neutro predeterminado del catálogo. Este campo ya no requiere intervención del administrador.
+
+> Nota: la imagen subida se guarda temporalmente como `data URL` dentro del almacenamiento local del navegador. Es adecuada para esta etapa de demostración, no para producción. En una fase posterior deberá reemplazarse por subida real a backend/almacenamiento de archivos.

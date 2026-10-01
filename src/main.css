@@ -188,13 +188,22 @@ body { overflow-x:hidden; }
 .admin-product-form label,.admin-category-create label { color:var(--ink); display:flex; flex-direction:column; font-size:11px; font-weight:700; gap:9px; }
 .admin-product-form input,.admin-product-form select,.admin-product-form textarea,.admin-category-create input,.admin-category-name input { background:var(--cream); border:1px solid var(--line); border-radius:3px; color:var(--ink); min-height:45px; padding:11px 12px; width:100%; }
 .admin-product-form textarea { min-height:105px; resize:vertical; }
-.admin-product-form input[type="color"] { padding:5px; }
 .admin-form-wide { grid-column:1/-1; }
 .admin-field-error,.admin-form-error { color:#a75445; font-size:10px; font-weight:500; line-height:1.5; }
 .admin-form-error { border-left:2px solid var(--coral); margin:18px 0; padding-left:10px; }
 .admin-image-preview { align-items:flex-start; display:flex; flex-direction:column; gap:9px; margin:24px 0; }
 .admin-image-preview span { color:var(--muted); font-size:10px; }
 .admin-image-preview img { background:var(--cream); border:1px solid var(--line); height:170px; object-fit:cover; width:170px; }
+.admin-image-source { background:var(--cream); border:1px solid var(--line); border-radius:3px; padding:18px; }
+.admin-image-source-copy { display:flex; flex-direction:column; gap:5px; margin-bottom:16px; }
+.admin-image-source-copy strong { font-size:11px; }
+.admin-image-source-copy span,.admin-image-note,.admin-upload-name { color:var(--muted); font-size:10px; font-weight:400; line-height:1.55; }
+.admin-file-input { display:none; }
+.admin-upload-row { align-items:center; display:flex; flex-wrap:wrap; gap:10px; margin-top:12px; }
+.admin-upload-row .admin-secondary-button { min-height:40px; padding:11px 15px; }
+.admin-image-clear { background:none; border:0; color:#9b5a50; font-size:11px; padding:8px 2px; text-decoration:underline; text-underline-offset:3px; }
+.admin-upload-name { max-width:330px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.admin-image-note { margin:10px 0 0; max-width:650px; }
 .admin-save-button { border:0; margin-top:24px; }
 
 .admin-category-create { background:var(--cream); border:1px solid var(--line); margin-bottom:24px; padding:22px; }
