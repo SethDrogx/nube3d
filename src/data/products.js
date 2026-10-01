@@ -7,6 +7,8 @@ export const products = [
     image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=900&q=85',
     tag: 'Más vendido',
     color: '#f6b4a3',
+    stock: 15,
+    description: 'Llavero articulado ligero y resistente, ideal para mochila, llaves o regalo personalizado.',
   },
   {
     id: 2,
@@ -16,6 +18,8 @@ export const products = [
     image: 'https://images.unsplash.com/photo-1556229010-6c3f2c9ca5f8?auto=format&fit=crop&w=900&q=85',
     tag: 'Nuevo',
     color: '#d8e6de',
+    stock: 8,
+    description: 'Organizador compacto para baño con espacio para cepillos y accesorios de uso diario.',
   },
   {
     id: 3,
@@ -25,6 +29,8 @@ export const products = [
     image: 'https://images.unsplash.com/photo-1599669454699-248893623440?auto=format&fit=crop&w=900&q=85',
     tag: 'Favorito',
     color: '#dce0f5',
+    stock: 6,
+    description: 'Soporte de escritorio para mantener tus audífonos organizados y siempre a la mano.',
   },
   {
     id: 4,
@@ -34,6 +40,8 @@ export const products = [
     image: 'https://images.unsplash.com/photo-1593305841991-05c297ba4575?auto=format&fit=crop&w=900&q=85',
     tag: 'Popular',
     color: '#d9e7ef',
+    stock: 0,
+    description: 'Base decorativa para control de videojuegos, pensada para escritorios y setups gaming.',
   },
 ]
 

@@ -15,7 +15,8 @@ export default function Login() {
   const [error, setError] = useState('')
   const [storageWarning, setStorageWarning] = useState(false)
 
-  const destination = location.state?.from === '/admin' ? '/admin' : user?.role === ROLES.SUPER_USUARIO ? '/admin' : '/'
+  const requestedAdminRoute = typeof location.state?.from === 'string' && location.state.from.startsWith('/admin') ? location.state.from : null
+  const destination = requestedAdminRoute || (user?.role === ROLES.SUPER_USUARIO ? '/admin' : '/')
   if (user && !storageWarning) return <Navigate to={destination} replace />
 
   function handleSubmit(event) {

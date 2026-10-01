@@ -6,11 +6,17 @@ import Producto from './pages/Producto'
 import Carrito from './pages/Carrito'
 import Personalizado from './pages/Personalizado'
 import Login from './pages/Login'
-import Admin from './pages/Admin'
 import { CartProvider } from './context/CartContext'
 import { AuthProvider } from './context/AuthContext'
+import { ProductProvider } from './context/ProductContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import { ROLES } from './data/users'
+import AdminLayout from './components/admin/AdminLayout'
+import AdminDashboard from './pages/admin/AdminDashboard'
+import AdminProducts from './pages/admin/AdminProducts'
+import AdminProductNew from './pages/admin/AdminProductNew'
+import AdminProductEdit from './pages/admin/AdminProductEdit'
+import AdminCategories from './pages/admin/AdminCategories'
 
 function AnimatedRoutes() {
   const location = useLocation()
@@ -32,7 +38,16 @@ function AnimatedRoutes() {
           <Route path="/carrito" element={<Carrito />} />
           <Route path="/personalizado" element={<Personalizado />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/admin" element={<ProtectedRoute requiredRole={ROLES.SUPER_USUARIO}><Admin /></ProtectedRoute>} />
+          <Route
+            path="/admin"
+            element={<ProtectedRoute requiredRole={ROLES.SUPER_USUARIO}><AdminLayout /></ProtectedRoute>}
+          >
+            <Route index element={<AdminDashboard />} />
+            <Route path="productos" element={<AdminProducts />} />
+            <Route path="productos/nuevo" element={<AdminProductNew />} />
+            <Route path="productos/:id/editar" element={<AdminProductEdit />} />
+            <Route path="categorias" element={<AdminCategories />} />
+          </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </motion.div>
@@ -45,9 +60,11 @@ export default function App() {
     <MotionConfig reducedMotion="user">
       <BrowserRouter>
         <AuthProvider>
-          <CartProvider>
-            <AnimatedRoutes />
-          </CartProvider>
+          <ProductProvider>
+            <CartProvider>
+              <AnimatedRoutes />
+            </CartProvider>
+          </ProductProvider>
         </AuthProvider>
       </BrowserRouter>
     </MotionConfig>

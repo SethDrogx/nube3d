@@ -1,20 +1,25 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import Toast from '../components/Toast'
-import { products } from '../data/products'
 import { CART_STORAGE_KEY, cartReducer, getCartSummary, readCart } from './cartState'
+import { useProducts } from './ProductContext'
 
 const CartContext = createContext(null)
 
 export function CartProvider({ children }) {
+  const { products } = useProducts()
   const [items, dispatch] = useReducer(cartReducer, undefined, () => {
     try {
-      return readCart(window.localStorage)
+      return readCart(window.localStorage, products)
     } catch {
       return []
     }
   })
   const [toast, setToast] = useState(null)
   const toastId = useRef(0)
+
+  useEffect(() => {
+    dispatch({ type: 'prune', catalog: products })
+  }, [products])
 
   useEffect(() => {
     try {
@@ -35,15 +40,20 @@ export function CartProvider({ children }) {
   }, [])
   const dismissToast = useCallback(() => setToast(null), [])
   const addProduct = useCallback((id) => {
-    if (!products.some((product) => product.id === id)) return
-    dispatch({ type: 'add', id })
+    const product = products.find((item) => String(item.id) === String(id))
+    if (!product) return
+    if (product.stock === 0) {
+      notify('Este producto está agotado')
+      return
+    }
+    dispatch({ type: 'add', id, catalog: products })
     notify('Producto agregado al carrito')
-  }, [notify])
+  }, [notify, products])
   const removeProduct = useCallback((id) => dispatch({ type: 'remove', id }), [])
   const increaseQuantity = useCallback((id) => dispatch({ type: 'increase', id }), [])
   const decreaseQuantity = useCallback((id) => dispatch({ type: 'decrease', id }), [])
   const clearCart = useCallback(() => dispatch({ type: 'clear' }), [])
-  const summary = useMemo(() => getCartSummary(items), [items])
+  const summary = useMemo(() => getCartSummary(items, products), [items, products])
   const value = useMemo(() => ({
     ...summary, addProduct, removeProduct, increaseQuantity, decreaseQuantity, clearCart, notify,
   }), [summary, addProduct, removeProduct, increaseQuantity, decreaseQuantity, clearCart, notify])

@@ -1,3 +1,19 @@
+## Fase 4 — Panel administrativo y gestión de productos
+
+El rol `SUPER_USUARIO` dispone ahora de un panel administrativo funcional bajo `/admin`. El catálogo se centraliza en `ProductContext`, usa `src/data/products.js` como seed inicial y persiste cambios en `localStorage`. Los cambios administrativos se reflejan inmediatamente en Home, Catálogo, detalle de producto y carrito.
+
+Rutas administrativas protegidas:
+
+- `/admin` — dashboard con métricas reales
+- `/admin/productos` — listado de productos
+- `/admin/productos/nuevo` — alta de producto
+- `/admin/productos/:id/editar` — edición
+- `/admin/categorias` — gestión de categorías
+
+Claves locales de esta fase: `nube3d.products.v1` y `nube3d.categories.v1`. No constituyen una base de datos ni almacenamiento seguro. La opción **Restaurar catálogo demo** vuelve a cargar los datos originales de `src/data/products.js`. Consulta `PHASE_4_ADMIN.md` para el alcance técnico.
+
+Pruebas: `npm test`.
+
 ## Fase 3 — Login, sesión y roles
 
 Autenticación local con `AuthContext`, comprobación centralizada de roles y permisos, login y menú de usuario. `/admin` requiere `SUPER_USUARIO` y conserva únicamente un placeholder. Un visitante sin sesión va al login; un `INVITADO` ve acceso denegado. La tienda sigue abierta sin login y el carrito conserva su contexto y almacenamiento independientes.
@@ -70,11 +86,11 @@ npm run preview
 
 - `/` — inicio
 - `/catalogo` — catálogo
-- `/producto/:id` — detalle de producto (placeholder)
+- `/producto/:id` — detalle de producto conectado al catálogo
 - `/carrito` — carrito funcional con cantidades y persistencia
 - `/personalizado` — impresión personalizada (placeholder)
 - `/login` — inicio de sesión mock
-- `/admin` — placeholder protegido para SUPER_USUARIO
+- `/admin` y `/admin/*` — panel administrativo protegido para SUPER_USUARIO
 
 ## Estructura principal
 
@@ -91,7 +107,7 @@ src/
 
 ## Alcance de esta fase
 
-La fase 3 incorpora únicamente login, sesión y roles locales de demostración sobre el carrito, diseño y animaciones aprobados. El panel administrativo funcional, cotizaciones con persistencia, backend, base de datos, autenticación real, pagos, pedidos y chatbot inteligente quedan para fases posteriores.
+La fase 4 agrega administración local de productos y categorías sobre las fases anteriores. Cotizaciones con persistencia, backend, base de datos, autenticación real, pagos, pedidos y chatbot inteligente quedan para fases posteriores.
 
 ## Cambios técnicos
 

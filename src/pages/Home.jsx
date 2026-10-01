@@ -7,15 +7,16 @@ import CustomSection from '../components/CustomSection'
 import QuoteSection from '../components/QuoteSection'
 import Footer from '../components/Footer'
 import ChatAssistant from '../components/ChatAssistant'
-import { products } from '../data/products'
 import { useCart } from '../context/CartContext'
+import { useProducts } from '../context/ProductContext'
 
 export default function Home() {
   const [query, setQuery] = useState('')
   const { addProduct } = useCart()
+  const { products } = useProducts()
   const filteredProducts = useMemo(
     () => products.filter((product) => product.name.toLowerCase().includes(query.toLowerCase())),
-    [query],
+    [products, query],
   )
 
   return (
