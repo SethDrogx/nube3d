@@ -2,6 +2,7 @@ import { motion } from 'motion/react'
 import { Link } from 'react-router-dom'
 import Brand from './Brand'
 import { useCart } from '../context/CartContext'
+import UserMenu from './UserMenu'
 
 function BagIcon() {
   return <span aria-hidden="true" className="bag-icon">⌂</span>
@@ -44,7 +45,7 @@ export default function Navbar({ query = '', onQueryChange = () => {} }) {
               aria-label="Buscar productos"
             />
           </label>
-          <Link className="login" to="/login">Iniciar sesión</Link>
+          <UserMenu />
           <motion.div whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.9 }}>
             <Link className="cart" to="/carrito" aria-label={`Carrito con ${cartCount} ${cartCount === 1 ? 'producto' : 'productos'}`}>
               <BagIcon />

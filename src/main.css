@@ -80,6 +80,38 @@ body { overflow-x:hidden; }
 @media (max-width:900px) { .cart-page { padding:65px 5vw 75px; }.cart-layout { gap:28px; grid-template-columns:minmax(0,1fr) 280px; }.cart-item { gap:14px; grid-template-columns:70px minmax(0,1fr); }.cart-item-image { grid-row:1; height:90px; width:70px; }.cart-item-info { grid-row:1; }.cart-quantity { grid-column:2; grid-row:2; justify-self:start; }.cart-line-total { grid-column:2; grid-row:3; justify-self:start; }.cart-summary { padding:22px; } }
 @media (max-width:620px) { .cart-layout { grid-template-columns:minmax(0,1fr); }.cart-empty { padding:40px 16px; }.cart-toast-region { top:16px; right:16px; }.cart-quantity button { min-height:40px; width:36px; } }
 
+/* Fase 3 — Local demo authentication; reuse the existing palette and type. */
+.site-header { position:relative; z-index:20; }
+.auth-page { background:#fff; min-height:520px; padding:75px 5vw 90px; }
+.auth-card { margin:0 auto; max-width:440px; }
+.auth-card h1 { font-size:clamp(38px,5vw,52px); font-weight:500; letter-spacing:-.055em; margin:0 0 20px; }
+.auth-intro { color:var(--muted); font-size:14px; line-height:1.7; margin:0 0 30px; }
+.auth-form { display:flex; flex-direction:column; }
+.auth-form label { font-size:12px; font-weight:700; margin-bottom:10px; }
+.auth-form input { background:var(--cream); border:1px solid var(--line); border-radius:3px; color:var(--ink); font-size:14px; min-height:46px; min-width:0; padding:12px; width:100%; }
+.auth-form > input { margin-bottom:22px; }
+.auth-password { align-items:center; background:var(--cream); border:1px solid var(--line); border-radius:3px; display:flex; }
+.auth-password input { border:0; background:transparent; flex:1; width:0; }
+.auth-password button { background:transparent; border:0; color:var(--muted); flex-shrink:0; font-size:11px; min-height:44px; padding:0 12px; }
+.auth-submit { align-items:center; border:0; justify-content:space-between; margin-top:24px; }
+.auth-error { border-left:2px solid var(--coral); color:var(--ink); font-size:12px; line-height:1.6; margin:16px 0 0; padding-left:12px; }
+.auth-demo { border-bottom:1px solid var(--line); border-top:1px solid var(--line); margin:28px 0 18px; padding:16px 0; }
+.auth-demo summary { color:var(--muted); cursor:pointer; font-size:12px; }
+.auth-demo-account { display:flex; flex-direction:column; font-size:12px; gap:7px; margin-top:20px; }
+.auth-demo-account span { color:var(--muted); overflow-wrap:anywhere; }
+.auth-disclaimer { color:var(--muted); font-size:11px; line-height:1.7; margin:0 0 24px; }
+.auth-storage-notice { color:var(--muted); font-size:13px; line-height:1.7; }
+.user-menu { position:relative; }
+.user-menu-trigger { background:none; border:0; color:#696a66; font-size:13px; padding:4px 0; white-space:nowrap; }
+.user-menu-trigger span { color:var(--coral); margin-left:3px; }
+.user-menu-panel { background:#fff; border:1px solid var(--line); border-radius:3px; box-shadow:0 8px 28px #1e1f1d1c; padding:18px; position:absolute; right:0; top:calc(100% + 14px); width:220px; }
+.user-menu-panel p { color:var(--muted); font-size:11px; margin:0 0 14px; }
+.user-menu-panel strong { color:var(--ink); display:block; font-size:11px; letter-spacing:.04em; margin-top:7px; }
+.user-menu-panel a,.user-menu-panel button { background:none; border:0; display:block; font-size:12px; padding:10px 0; text-align:left; width:100%; }
+.user-menu-panel button { border-top:1px solid var(--line); color:var(--coral); }
+.auth-page input:focus-visible,.auth-page button:focus-visible,.auth-page a:focus-visible,.auth-demo summary:focus-visible,.user-menu button:focus-visible,.user-menu a:focus-visible,.auth-login:focus-visible { outline:2px solid var(--coral); outline-offset:3px; }
+@media (max-width:620px) { .auth-page { padding:55px 6vw 65px; }.site-header { gap:12px; }.auth-login { display:inline; font-size:11px; white-space:nowrap; }.user-menu-trigger { font-size:11px; max-width:85px; overflow:hidden; text-overflow:ellipsis; }.user-menu-panel { right:-22px; } }
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior:auto; }
   *,*::before,*::after {

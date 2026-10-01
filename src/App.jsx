@@ -8,6 +8,9 @@ import Personalizado from './pages/Personalizado'
 import Login from './pages/Login'
 import Admin from './pages/Admin'
 import { CartProvider } from './context/CartContext'
+import { AuthProvider } from './context/AuthContext'
+import ProtectedRoute from './components/ProtectedRoute'
+import { ROLES } from './data/users'
 
 function AnimatedRoutes() {
   const location = useLocation()
@@ -29,7 +32,7 @@ function AnimatedRoutes() {
           <Route path="/carrito" element={<Carrito />} />
           <Route path="/personalizado" element={<Personalizado />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/admin" element={<Admin />} />
+          <Route path="/admin" element={<ProtectedRoute requiredRole={ROLES.SUPER_USUARIO}><Admin /></ProtectedRoute>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </motion.div>
@@ -41,9 +44,11 @@ export default function App() {
   return (
     <MotionConfig reducedMotion="user">
       <BrowserRouter>
-        <CartProvider>
-          <AnimatedRoutes />
-        </CartProvider>
+        <AuthProvider>
+          <CartProvider>
+            <AnimatedRoutes />
+          </CartProvider>
+        </AuthProvider>
       </BrowserRouter>
     </MotionConfig>
   )
