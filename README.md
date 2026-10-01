@@ -1,3 +1,19 @@
+## FASE 5 - Cotizaciones personalizadas
+
+`/personalizado` permite solicitar impresiones sin sesión: nombre, correo, teléfono opcional, descripción, medidas, color, cantidad entera desde 1, imagen y comentarios. Reutiliza la compresión de Fase 4.1 (hasta 1200 px y 280 KiB) y verifica que la referencia cargue como imagen. No admite archivos 3D ni documentos. La confirmación y el folio aparecen solo tras guardar correctamente; un fallo de almacenamiento conserva el formulario.
+
+`QuoteContext` centraliza `quotes`, `addQuote`, `getQuoteById`, `getQuoteByFolio`, `getPublicQuoteByFolio`, `updateQuoteStatus`, `deleteQuote` y `getQuoteMetrics`. La lógica comprobable vive en `quoteState.js`. Cada solicitud contiene `id`, `folio`, `fechaCreacion`, `nombre`, `email`, `telefono`, `descripcion`, `medidas`, `color`, `cantidad`, `imagen`, `comentarios` y `estado`. Los folios tienen formato `COT-AAAAMMDD-NNNN`, usando la fecha local del navegador y una secuencia persistente por fecha en `nube3d_quote_sequence`, independiente de las solicitudes actuales. El ID es un UUID. Eliminar una solicitud no reduce el contador ni libera su folio. La secuencia se reserva antes del guardado; si este falla, puede quedar un salto, pero no se reutiliza el número. Los folios existentes inicializan el contador sin modificarse. Si la secuencia está dañada, se bloquea la creación en lugar de reiniciar la numeración; al llegar a 9999 se bloquean nuevas solicitudes para esa fecha para conservar cuatro dígitos.
+
+Estados: `NUEVA`, `EN_REVISION`, `COTIZADA`, `ACEPTADA`, `RECHAZADA`. `/admin/cotizaciones` ofrece filtros por estado y búsqueda por folio, nombre o correo; `/admin/cotizaciones/:id` muestra el detalle y permite actualizar el estado con toast. Ambas rutas reutilizan `ProtectedRoute` y requieren `SUPER_USUARIO`. El dashboard calcula total, nuevas y en revisión sin alterar las métricas de productos.
+
+`/cotizacion` consulta por folio y muestra solo folio, fecha, estado y los primeros 120 caracteres de la descripción. No muestra nombre, correo, teléfono, imágenes ni comentarios. La descripción es texto público y no debe contener datos personales. Esta vista prepara la consulta futura del bot, sin integrarlo todavía.
+
+Persistencia automática en la clave independiente `nube3d_quotes`: cada mutación se escribe antes de actualizar el contexto. Restaurar el catálogo demo no borra cotizaciones. Datos dañados o inválidos se ignoran al leer. Si localStorage falla o agota su cuota, se informa el error sin confirmar un guardado inexistente.
+
+**Solo demostración y desarrollo:** las solicitudes existen en este navegador y origen; no se envían a Nube 3D ni se sincronizan entre dispositivos o pestañas abiertas. Borrar los datos del navegador las elimina. localStorage es editable y accesible desde el cliente; roles mock y folios no constituyen seguridad, autorización real ni privacidad de producción. No uses datos sensibles. Las URLs de imágenes dependen de servidores externos y pueden dejar de funcionar. No se implementan backend, correo, pagos, pedidos ni IA.
+
+Validación: `npm test` incluye creación, validaciones, folios, persistencia, búsquedas, estados, métricas, proyección pública e independencia del catálogo, junto con todas las pruebas anteriores. `npm run build` compila la aplicación.
+
 ## Fase 4 — Panel administrativo y gestión de productos
 
 El rol `SUPER_USUARIO` dispone ahora de un panel administrativo funcional bajo `/admin`. El catálogo se centraliza en `ProductContext`, usa `src/data/products.js` como seed inicial y persiste cambios en `localStorage`. Los cambios administrativos se reflejan inmediatamente en Home, Catálogo, detalle de producto y carrito.
@@ -88,7 +104,9 @@ npm run preview
 - `/catalogo` — catálogo
 - `/producto/:id` — detalle de producto conectado al catálogo
 - `/carrito` — carrito funcional con cantidades y persistencia
-- `/personalizado` — impresión personalizada (placeholder)
+- `/personalizado` — formulario público de cotización
+- `/cotizacion` — consulta pública por folio
+- `/admin/cotizaciones` y `/admin/cotizaciones/:id` — gestión y detalle protegidos
 - `/login` — inicio de sesión mock
 - `/admin` y `/admin/*` — panel administrativo protegido para SUPER_USUARIO
 
@@ -107,7 +125,7 @@ src/
 
 ## Alcance de esta fase
 
-La fase 4 agrega administración local de productos y categorías sobre las fases anteriores. Cotizaciones con persistencia, backend, base de datos, autenticación real, pagos, pedidos y chatbot inteligente quedan para fases posteriores.
+La fase 5 agrega cotizaciones con persistencia local sobre las fases anteriores. Backend, base de datos, autenticación real, pagos, pedidos y chatbot inteligente quedan para fases posteriores.
 
 ## Cambios técnicos
 

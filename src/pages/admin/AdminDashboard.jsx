@@ -2,11 +2,13 @@ import { useCallback, useState } from 'react'
 import { motion } from 'motion/react'
 import { Link } from 'react-router-dom'
 import { useProducts } from '../../context/ProductContext'
+import { useQuotes } from '../../context/QuoteContext'
 import AdminStatCard from '../../components/admin/AdminStatCard'
 import ConfirmModal from '../../components/admin/ConfirmModal'
 
 export default function AdminDashboard() {
   const { metrics, restoreDemoCatalog, products } = useProducts()
+  const quoteMetrics = useQuotes().getQuoteMetrics()
   const [resetOpen, setResetOpen] = useState(false)
   const closeReset = useCallback(() => setResetOpen(false), [])
 
@@ -23,6 +25,7 @@ export default function AdminDashboard() {
         <AdminStatCard label="Categorías" value={metrics.totalCategories} detail="Organización del catálogo" />
       </div>
       <motion.div className="admin-dashboard-grid" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+        <article className="admin-panel-card"><h2>Cotizaciones</h2><div className="admin-stat-grid quote-stat-grid"><AdminStatCard label="Cotizaciones totales" value={quoteMetrics.total} detail="Solicitudes locales" /><AdminStatCard label="Nuevas" value={quoteMetrics.nuevas} detail="Pendientes de revisar" /><AdminStatCard label="En revisión" value={quoteMetrics.enRevision} detail="En seguimiento" /></div><Link to="/admin/cotizaciones">Gestionar cotizaciones ↗</Link></article>
         <article className="admin-panel-card">
           <p className="kicker">ACCESOS RÁPIDOS</p>
           <h2>Catálogo</h2>

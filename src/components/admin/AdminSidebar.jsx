@@ -4,6 +4,7 @@ const links = [
   { to: '/admin', label: 'Dashboard', end: true },
   { to: '/admin/productos', label: 'Productos' },
   { to: '/admin/categorias', label: 'Categorías' },
+  { to: '/admin/cotizaciones', label: 'Cotizaciones' },
 ]
 
 export default function AdminSidebar() {

@@ -5,6 +5,10 @@ import Catalogo from './pages/Catalogo'
 import Producto from './pages/Producto'
 import Carrito from './pages/Carrito'
 import Personalizado from './pages/Personalizado'
+import Cotizacion from './pages/Cotizacion'
+import AdminQuotes from './pages/admin/AdminQuotes'
+import AdminQuoteDetail from './pages/admin/AdminQuoteDetail'
+import { QuoteProvider } from './context/QuoteContext'
 import Login from './pages/Login'
 import { CartProvider } from './context/CartContext'
 import { AuthProvider } from './context/AuthContext'
@@ -37,6 +41,7 @@ function AnimatedRoutes() {
           <Route path="/producto/:id" element={<Producto />} />
           <Route path="/carrito" element={<Carrito />} />
           <Route path="/personalizado" element={<Personalizado />} />
+          <Route path="/cotizacion" element={<Cotizacion />} />
           <Route path="/login" element={<Login />} />
           <Route
             path="/admin"
@@ -47,6 +52,8 @@ function AnimatedRoutes() {
             <Route path="productos/nuevo" element={<AdminProductNew />} />
             <Route path="productos/:id/editar" element={<AdminProductEdit />} />
             <Route path="categorias" element={<AdminCategories />} />
+            <Route path="cotizaciones" element={<AdminQuotes />} />
+            <Route path="cotizaciones/:id" element={<AdminQuoteDetail />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
@@ -62,7 +69,7 @@ export default function App() {
         <AuthProvider>
           <ProductProvider>
             <CartProvider>
-              <AnimatedRoutes />
+              <QuoteProvider><AnimatedRoutes /></QuoteProvider>
             </CartProvider>
           </ProductProvider>
         </AuthProvider>
