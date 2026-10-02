@@ -6,7 +6,6 @@ import ProductsSection from '../components/ProductsSection'
 import CustomSection from '../components/CustomSection'
 import QuoteSection from '../components/QuoteSection'
 import Footer from '../components/Footer'
-import ChatAssistant from '../components/ChatAssistant'
 import { useCart } from '../context/CartContext'
 import { useProducts } from '../context/ProductContext'
 
@@ -28,7 +27,6 @@ export default function Home() {
       <CustomSection />
       <QuoteSection />
       <Footer />
-      <ChatAssistant />
     </main>
   )
 }

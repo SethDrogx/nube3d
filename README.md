@@ -1,3 +1,19 @@
+## FASE 6 - Asistente virtual
+
+El asistente flotante funciona mediante reglas y respuestas predefinidas, sin IA ni llamadas a servicios externos. Está montado una sola vez en `App`, fuera de las transiciones de rutas: abrir/cerrar y navegar conserva la conversación. Mantiene el estilo anterior y agrega ocho opciones rápidas, texto libre, indicador breve de escritura, Enter para enviar, foco al abrir, scroll al último mensaje y **Nueva conversación**. Motion respeta movimiento reducido.
+
+Arquitectura: `ChatAssistant` (UI y React Router) → `useAssistant` (conversación y adaptadores de contextos) → `chatAssistantService` (motor de reglas y respuesta estructurada). `chatResponses.js` contiene opciones y textos. La interfaz consume mensajes con texto, resultados y acciones, para poder complementar o reemplazar el servicio con un proveedor de IA en otra fase sin reescribir la UI. No se agregó ningún proveedor, API key ni dependencia.
+
+Intents: búsqueda, precios, impresión personalizada, consulta de cotización, entrega, pagos, carrito, contacto y fallback. El texto se normaliza en minúsculas y sin acentos; la búsqueda compara palabras significativas con nombre, categoría y descripción del catálogo vigente de `ProductContext`, ordena por coincidencias y muestra hasta tres resultados con precio real y stock. Un agotado puede verse, pero no ofrece agregarlo al carrito desde el bot. `CartContext` proporciona cantidad total de unidades y total calculado.
+
+La consulta conversacional pide folio y usa únicamente `QuoteContext.getPublicQuoteByFolio`. Muestra folio, fecha, estado amigable y descripción resumida; nunca nombre, correo, teléfono, imagen ni comentarios. El servicio vuelve a seleccionar explícitamente esos cuatro campos. La consulta depende del almacenamiento local del navegador y la descripción sigue siendo pública como en Fase 5.
+
+Estados internos: `IDLE`, `WAITING_FOR_PRODUCT_SEARCH`, `WAITING_FOR_QUOTE_FOLIO`. El siguiente texto responde al flujo pendiente; una opción rápida permite cambiar de tema. Folios escritos directamente también se consultan. Acciones de navegación mediante React Router: `/catalogo`, `/producto/:id`, `/personalizado`, `/carrito` y `/cotizacion`. No hay acciones administrativas, independientemente del rol de sesión.
+
+Historial solo en memoria, limitado a 30 mensajes y entradas de hasta 1000 caracteres. Se conserva durante navegación SPA y al cerrar/reabrir; recargar la página o cerrar la pestaña inicia una conversación nueva. El reinicio cancela cualquier respuesta pendiente, limpia mensajes y estado y restaura el saludo, sin modificar los otros contextos. Los resultados históricos representan los datos al responder; una nueva consulta lee los datos actuales.
+
+Limitaciones: coincidencias simples, sin comprensión general ni tolerancia avanzada a errores. Un mensaje desconocido recibe fallback honesto y las opciones rápidas siguen disponibles. La entrega de 2 a 5 días hábiles es una referencia, no una garantía. El pago en línea y el contacto directo no están habilitados; no se inventan medios de pago, números o correos. No se implementan backend, WhatsApp, correos, pedidos, notificaciones ni IA. Pruebas: `npm test`; compilación: `npm run build`. Consulta `PHASE_6_ASSISTANT.md` para el informe y verificaciones.
+
 ## FASE 5 - Cotizaciones personalizadas
 
 `/personalizado` permite solicitar impresiones sin sesión: nombre, correo, teléfono opcional, descripción, medidas, color, cantidad entera desde 1, imagen y comentarios. Reutiliza la compresión de Fase 4.1 (hasta 1200 px y 280 KiB) y verifica que la referencia cargue como imagen. No admite archivos 3D ni documentos. La confirmación y el folio aparecen solo tras guardar correctamente; un fallo de almacenamiento conserva el formulario.

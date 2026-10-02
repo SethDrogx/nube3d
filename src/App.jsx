@@ -21,6 +21,7 @@ import AdminProducts from './pages/admin/AdminProducts'
 import AdminProductNew from './pages/admin/AdminProductNew'
 import AdminProductEdit from './pages/admin/AdminProductEdit'
 import AdminCategories from './pages/admin/AdminCategories'
+import ChatAssistant from './components/ChatAssistant'
 
 function AnimatedRoutes() {
   const location = useLocation()
@@ -69,7 +70,7 @@ export default function App() {
         <AuthProvider>
           <ProductProvider>
             <CartProvider>
-              <QuoteProvider><AnimatedRoutes /></QuoteProvider>
+              <QuoteProvider><AnimatedRoutes /><ChatAssistant /></QuoteProvider>
             </CartProvider>
           </ProductProvider>
         </AuthProvider>

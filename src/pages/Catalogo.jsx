@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react'
 import Navbar from '../components/Navbar'
 import ProductsSection from '../components/ProductsSection'
 import Footer from '../components/Footer'
-import ChatAssistant from '../components/ChatAssistant'
 import { useCart } from '../context/CartContext'
 import { useProducts } from '../context/ProductContext'
 
@@ -20,7 +19,6 @@ export default function Catalogo() {
       <Navbar query={query} onQueryChange={setQuery} />
       <ProductsSection products={filteredProducts} onAdd={addProduct} />
       <Footer />
-      <ChatAssistant />
     </main>
   )
 }
