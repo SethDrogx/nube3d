@@ -1,3 +1,11 @@
+## FASE 6.5 - Rediseño visual premium
+
+Polish visual limitado al Hero, `/personalizado` y nuevo/editar producto. El Hero mantiene su fotografía y composición, con tilt 3D por cursor, capas con parallax y float suave mediante Motion; con movimiento reducido permanece estático. Personalizado conserva un único formulario, agrupado en tres bloques editoriales con progreso informativo, upload con arrastre/selector, preview grande y tarjeta de folio. El indicador no valida ni exige una referencia.
+
+Product Studio muestra el formulario y un preview en vivo que reutiliza ProductCard en modo visual, sin enlaces de compra ni guardado automático. En móvil la vista previa aparece debajo. Ambos uploads reutilizan prepareImageFile; no se duplicó compresión. Los contadores de descripción solo muestran la longitud, sin imponer límites. Contextos, rutas, permisos, folios, persistencia y lógica del asistente permanecen intactos. Sin dependencias nuevas.
+
+Consulta `PHASE_6_5_VISUAL_POLISH.md` para componentes, Motion, responsive, accesibilidad y validaciones. Pruebas: `npm test`; compilación: `npm run build`.
+
 ## FASE 6 - Asistente virtual
 
 El asistente flotante funciona mediante reglas y respuestas predefinidas, sin IA ni llamadas a servicios externos. Está montado una sola vez en `App`, fuera de las transiciones de rutas: abrir/cerrar y navegar conserva la conversación. Mantiene el estilo anterior y agrega ocho opciones rápidas, texto libre, indicador breve de escritura, Enter para enviar, foco al abrir, scroll al último mensaje y **Nueva conversación**. Motion respeta movimiento reducido.

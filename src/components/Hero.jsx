@@ -1,6 +1,7 @@
 import { motion } from 'motion/react'
 import { Link } from 'react-router-dom'
 import { reveal, stagger } from '../animation'
+import HeroVisual from './HeroVisual'
 
 const MotionLink = motion.create(Link)
 
@@ -47,42 +48,7 @@ export default function Hero() {
         </motion.div>
       </motion.div>
 
-      <motion.div
-        className="hero-art"
-        initial={{ opacity: 0, scale: 0.985 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.85, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
-      >
-        <motion.div
-          className="art-glow"
-          animate={{ scale: [1, 1.07, 1], opacity: [0.58, 0.76, 0.58] }}
-          transition={{ duration: 5.5, repeat: Infinity, ease: 'easeInOut' }}
-        />
-        <motion.img
-          src="https://images.unsplash.com/photo-1634986666676-ec8fd927c23d?auto=format&fit=crop&w=1100&q=90"
-          alt="Figura decorativa impresa en 3D"
-          animate={{ y: [0, -10, 0], rotate: [0, 0.3, 0] }}
-          transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-          whileHover={{ scale: 1.025 }}
-        />
-        <motion.div
-          className="floating-card"
-          initial={{ opacity: 0, x: -18, y: 10 }}
-          animate={{ opacity: 1, x: 0, y: [0, -5, 0] }}
-          transition={{
-            opacity: { duration: 0.55, delay: 0.7 },
-            x: { duration: 0.55, delay: 0.7 },
-            y: { duration: 3.4, delay: 1.25, repeat: Infinity, ease: 'easeInOut' },
-          }}
-        >
-          <motion.span
-            className="floating-dot"
-            animate={{ scale: [1, 1.45, 1] }}
-            transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
-          />
-          <div><strong>Hecho para ti</strong><small>Personalización disponible</small></div>
-        </motion.div>
-      </motion.div>
+      <HeroVisual />
     </section>
   )
 }

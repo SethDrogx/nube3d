@@ -1,5 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { motion } from 'motion/react'
+import { Link } from 'react-router-dom'
+import FormSection from '../FormSection'
+import UploadZone from '../UploadZone'
+import ProductLivePreview from './ProductLivePreview'
 import { isValidImageSource, prepareImageFile } from '../../utils/imageUpload.js'
 
 const emptyProduct = {
@@ -29,7 +33,6 @@ export default function ProductForm({ initialProduct, categories, submitLabel, o
   const [saving, setSaving] = useState(false)
   const [processingImage, setProcessingImage] = useState(false)
   const [uploadedFileName, setUploadedFileName] = useState('')
-  const fileInputRef = useRef(null)
 
   useEffect(() => {
     setValues(initialValues)
@@ -49,8 +52,7 @@ export default function ProductForm({ initialProduct, categories, submitLabel, o
     setField('image', value)
   }
 
-  async function handleImageFile(event) {
-    const file = event.target.files?.[0]
+  async function handleImageFile(file) {
     if (!file) return
     setProcessingImage(true)
     setErrors((current) => ({ ...current, image: undefined, form: undefined }))
@@ -60,7 +62,6 @@ export default function ProductForm({ initialProduct, categories, submitLabel, o
       setUploadedFileName(prepared.originalName)
     } catch (error) {
       setErrors((current) => ({ ...current, image: error?.message || 'No se pudo procesar la imagen.' }))
-      event.target.value = ''
     } finally {
       setProcessingImage(false)
     }
@@ -70,7 +71,6 @@ export default function ProductForm({ initialProduct, categories, submitLabel, o
     setValues((current) => ({ ...current, image: '' }))
     setUploadedFileName('')
     setErrors((current) => ({ ...current, image: undefined }))
-    if (fileInputRef.current) fileInputRef.current.value = ''
   }
 
   async function handleSubmit(event) {
@@ -88,15 +88,19 @@ export default function ProductForm({ initialProduct, categories, submitLabel, o
   }
 
   return (
-    <motion.form className="admin-product-form" onSubmit={handleSubmit} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+    <div className="product-studio-grid"><motion.form className="admin-product-form product-studio-form" onSubmit={handleSubmit} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+      <FormSection number="01" title="Dale identidad" description="La información que acompaña a tu diseño.">
       <div className="admin-form-grid">
-        <label>Nombre<input value={values.name} onChange={(e) => setField('name', e.target.value)} />{errors.name && <span className="admin-field-error">{errors.name}</span>}</label>
-        <label>Categoría<select value={values.category} onChange={(e) => setField('category', e.target.value)}><option value="">Selecciona una categoría</option>{categories.map((category) => <option key={category.name} value={category.name}>{category.name}</option>)}</select>{errors.category && <span className="admin-field-error">{errors.category}</span>}</label>
-        <label>Precio<input type="number" min="0" step="0.01" value={values.price} onChange={(e) => setField('price', e.target.value)} />{errors.price && <span className="admin-field-error">{errors.price}</span>}</label>
-        <label>Stock<input type="number" min="0" step="1" value={values.stock} onChange={(e) => setField('stock', e.target.value)} />{errors.stock && <span className="admin-field-error">{errors.stock}</span>}</label>
+        <label>Nombre<input aria-label="Nombre" aria-invalid={Boolean(errors.name)} value={values.name} onChange={(e) => setField('name', e.target.value)} />{errors.name && <span className="admin-field-error" role="alert">{errors.name}</span>}</label>
+        <label>Categoría<select aria-label="Categoría" aria-invalid={Boolean(errors.category)} value={values.category} onChange={(e) => setField('category', e.target.value)}><option value="">Selecciona una categoría</option>{categories.map((category) => <option key={category.name} value={category.name}>{category.name}</option>)}</select>{errors.category && <span className="admin-field-error" role="alert">{errors.category}</span>}</label>
+        <label>Precio<input aria-label="Precio" aria-invalid={Boolean(errors.price)} type="number" min="0" step="0.01" value={values.price} onChange={(e) => setField('price', e.target.value)} />{errors.price && <span className="admin-field-error" role="alert">{errors.price}</span>}</label>
+        <label>Stock<input aria-label="Stock" aria-invalid={Boolean(errors.stock)} type="number" min="0" step="1" value={values.stock} onChange={(e) => setField('stock', e.target.value)} />{errors.stock && <span className="admin-field-error" role="alert">{errors.stock}</span>}</label>
         <label className="admin-form-wide">Etiqueta<input value={values.tag} onChange={(e) => setField('tag', e.target.value)} placeholder="Nuevo, Popular..." /></label>
+        <label className="admin-form-wide">Descripción<textarea aria-label="Descripción" rows="4" value={values.description} onChange={(e) => setField('description', e.target.value)} /><small className="character-count">{values.description.length} caracteres</small></label>
+      </div></FormSection>
+      <FormSection number="02" title="La imagen de tu pieza" description="Una fotografía protagonista para el catálogo.">
 
-        <div className="admin-form-wide admin-image-source">
+        <div className="admin-image-source">
           <div className="admin-image-source-copy">
             <strong>Imagen del producto</strong>
             <span>Pega una URL o sube una foto desde tu equipo. En celular puedes elegir una imagen de tu galería o tomar una foto con la cámara.</span>
@@ -111,23 +115,13 @@ export default function ProductForm({ initialProduct, categories, submitLabel, o
             />
           </label>
 
-          <div className="admin-upload-row">
-            <input ref={fileInputRef} className="admin-file-input" type="file" accept="image/*" onChange={handleImageFile} />
-            <button className="admin-secondary-button" type="button" onClick={() => fileInputRef.current?.click()} disabled={processingImage}>
-              {processingImage ? 'Preparando imagen…' : usingUploadedImage ? 'Cambiar imagen' : 'Subir imagen'}
-            </button>
-            {(values.image || uploadedFileName) && <button className="admin-image-clear" type="button" onClick={clearImage}>Quitar imagen</button>}
-            {uploadedFileName && <span className="admin-upload-name">{uploadedFileName}</span>}
-          </div>
+          <UploadZone image={isValidImageSource(values.image.trim()) ? values.image.trim() : ''} fileName={uploadedFileName} busy={processingImage} error={errors.image} onFile={handleImageFile} onClear={clearImage} onError={(event) => { event.currentTarget.style.opacity = '.2' }} />
           <p className="admin-image-note">Las fotos subidas se optimizan automáticamente para esta versión local. Más adelante el almacenamiento se moverá al backend/servicio de imágenes.</p>
-          {errors.image && <span className="admin-field-error">{errors.image}</span>}
         </div>
 
-        <label className="admin-form-wide">Descripción<textarea rows="4" value={values.description} onChange={(e) => setField('description', e.target.value)} /></label>
-      </div>
-      {values.image && isValidImageSource(values.image.trim()) && <div className="admin-image-preview"><span>Vista previa</span><img src={values.image} alt="Vista previa del producto" onError={(event) => { event.currentTarget.style.opacity = '.2' }} /></div>}
+      </FormSection>
       {errors.form && <p className="admin-form-error" role="alert">{errors.form}</p>}
-      <motion.button className="primary-button admin-save-button" type="submit" disabled={saving || processingImage} whileTap={{ scale: 0.98 }}>{saving ? 'Guardando…' : submitLabel}<span>↗</span></motion.button>
-    </motion.form>
+      <div className="studio-form-actions"><motion.button className="primary-button admin-save-button" type="submit" disabled={saving || processingImage} whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}>{saving ? 'Guardando…' : submitLabel}<span>↗</span></motion.button><Link className="text-button" to="/admin/productos">Cancelar</Link></div>
+    </motion.form><ProductLivePreview values={values} /></div>
   )
 }
