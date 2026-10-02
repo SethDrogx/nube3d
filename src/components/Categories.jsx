@@ -2,6 +2,7 @@ import { motion } from 'motion/react'
 import { Link } from 'react-router-dom'
 import { reveal, stagger, viewport } from '../animation'
 import { useProducts } from '../context/ProductContext'
+import { categoryCatalogUrl, getCategoryProducts } from '../utils/catalogCategory'
 
 const MotionLink = motion.create(Link)
 
@@ -24,9 +25,9 @@ export default function Categories() {
       </motion.div>
       <motion.div className="category-grid" variants={stagger}>
         {categories.map((category) => {
-          const count = products.filter((product) => product.category === category.name).length
+          const count = getCategoryProducts(products, category.name).length
           return (
-            <MotionLink className="category-card" to="/catalogo" key={category.name} variants={cardVariants} whileHover={{ y: -8 }} whileTap={{ scale: 0.985 }} transition={{ type: 'spring', stiffness: 280, damping: 24 }}>
+            <MotionLink className="category-card" to={categoryCatalogUrl(category.name)} key={category.name} variants={cardVariants} whileHover={{ y: -8 }} whileTap={{ scale: 0.985 }} transition={{ type: 'spring', stiffness: 280, damping: 24 }}>
               <img src={category.image} alt={category.name} />
               <div><h3>{category.name}</h3><span>{count} {count === 1 ? 'diseño' : 'diseños'} ↗</span></div>
             </MotionLink>
