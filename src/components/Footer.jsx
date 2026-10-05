@@ -23,7 +23,7 @@ export default function Footer() {
         <div><strong>Síguenos</strong><a href="/#contacto">Instagram ↗</a><a href="/#contacto">TikTok ↗</a><a href="/#contacto">Pinterest ↗</a></div>
       </motion.div>
       <motion.div className="footer-bottom" variants={reveal}>
-        <span>© 2024 Nube 3D</span><span>Hecho con intención en México</span>
+        <span>© {new Date().getFullYear()} Nube 3D</span><span>Hecho con intención en México</span>
       </motion.div>
     </motion.footer>
   )
